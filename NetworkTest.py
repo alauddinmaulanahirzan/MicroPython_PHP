@@ -10,10 +10,14 @@ import re
 uart = UART(0,115200) # uart on uart1 with baud of 115200
 wifi_ssid = ("TOTOLINK_N200RE")
 wifi_password = ("raspberry")
+
 #  Configure LED PIN
 led = Pin(25, Pin.OUT)
+
 # Global Variable
 query = None
+lamp = False
+
 # Set up an analog input on ADC0 (GP26), which is physically pin 31.
 sensor = ADC(Pin(26))
 
@@ -48,22 +52,25 @@ def testNetwork(address):
     print(uart.read())
     
 def main():
-    global query,uart,sensor
+    global query,uart,sensor,lamp
     ip_addr,mac_addr = connectNetwork(False)
     print (f" => Found {ip_addr} \n => Found {mac_addr}")
     while True:
+        # Lampu
+        if(lamp == True):
+            led.value(1)
+            time.sleep(1)
+            led.value(0)
+            time.sleep(1)
         # Ambil Pengukuran
         measurement = sensor.read_u16()
         # Konversi ADC ke Voltase 5V
         voltage = measurement*5/65536
         # Konversi Voltase ke pH
-        ph = 7+((4.265-voltage)/0.18)
-        print(ph)
+        ph = 7+((2.5-voltage)/0.18)
+        print(measurement,voltage,ph)
         time.sleep(1)
-        led.value(1)
-        time.sleep(1)
-        led.value(0)
-        time.sleep(1)
+        
 
 if __name__ == "__main__":
     main()
