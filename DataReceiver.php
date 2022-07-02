@@ -12,18 +12,20 @@
     $database = $factory->createDatabase();
 
     // Get Data and Hash
-    $previous = $_GET['previous'];
     $id = $_GET['id'];
+    $previous = $_GET['previous'];
     $ph = $_GET['ph'];
+    $hash = $_GET['hash'];
 
     $id = sprintf("%03d", $id);
-    $hash = md5($ph);
+
+    print($id." ".$ph." ".$hash);
 
     // Send Query to Firebase
-    $database->getReference('/Device1/00-Block_'.$id)
-    ->set([
-            '01-Previous' => $previous,
-            '02-Data' => $ph,
-            '03-Hash' => $hash
-        ]);
+    //$database->getReference('/Device1/00-Block_'.$id)
+    //->set([
+    //        '01-Previous' => $previous,
+    //        '02-Data' => $ph,
+    //        '03-Hash' => $hash
+    //    ]);
 ?>
