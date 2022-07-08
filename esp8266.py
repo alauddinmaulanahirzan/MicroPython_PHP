@@ -399,7 +399,7 @@ class ESP8266:
         else:
             return False
 
-    def _createTCPConnection(self, link, port=80):
+    def _createTCPConnection(self, link, port=8000):
         """
         This fucntion use to create connect between ESP8266 and Host.
         Just like create a socket before complete the HTTP Get/Post operation.
@@ -422,7 +422,7 @@ class ESP8266:
         else:
             False
     
-    def doHttpGet(self,host,path,user_agent="RPi-Pico", port=80):
+    def doHttpGet(self,host,path,user_agent="RPi-Pico", port=8000):
         """
         This fucntion use to complete a HTTP Get operation
         
@@ -439,8 +439,8 @@ class ESP8266:
         """
         if(self._createTCPConnection(host, port) == True):
             self._createHTTPParseObj()
-            #getHeader="GET "+path+" HTTP/1.1\r\n"+"Host: "+host+":"+str(port)+"\r\n"+"User-Agent: "+user_agent+"\r\n"+"\r\n";
-            getHeader="GET "+path+" HTTP/1.1\r\n"+"Host: "+host+"\r\n"+"User-Agent: "+user_agent+"\r\n"+"\r\n";
+            getHeader="GET "+path+" HTTP/1.1\r\n"+"Host: "+host+":"+str(port)+"\r\n"+"User-Agent: "+user_agent+"\r\n"+"\r\n";
+            #getHeader="GET "+path+" HTTP/1.1\r\n"+"Host: "+host+"\r\n"+"User-Agent: "+user_agent+"\r\n"+"\r\n";
             #print(getHeader,len(getHeader))
             txData="AT+CIPSEND="+str(len(getHeader))+"\r\n"
             retData = self._sendToESP8266(txData)
@@ -448,46 +448,6 @@ class ESP8266:
                 if ">" in retData:
                     retData = self._sendToESP8266(getHeader, delay=2)
                     self._sendToESP8266("AT+CIPCLOSE\r\n")
-                    retData=self.__httpResponse.parseHTTP(retData)
-                    return retData, self.__httpResponse.getHTTPResponse()
-                else:
-                    return 0, None
-            else:
-                return 0, None
-        else:
-            self._sendToESP8266("AT+CIPCLOSE\r\n")
-            return 0, None
-            
-        
-    def doHttpPost(self,host,path,user_agent="RPi-Pico",content_type,content,port=80):
-        """
-        This fucntion use to complete a HTTP Post operation
-        
-        Parameter:
-            host (str): Host URL [ex: get operation URL: www.httpbin.org/ip. so, Host URL only "www.httpbin.org"]
-            path (str): Get operation's URL path [ex: get operation URL: www.httpbin.org/ip. so, the path "/ip"]
-            user-agent (str): User Agent Name [Default "RPi-Pico"]
-            content_type (str): Post operation's upload content type [ex. "application/json", "application/x-www-form-urlencoded", "text/plain"
-            content (str): Post operation's upload content 
-            post (int): HTTP post number [Default port number 80]
-        
-        Return:
-            HTTP error code & HTTP response[If error not equal to 200 then the response is None]
-            On failed return 0 and None
-        
-        """
-        if(self._createTCPConnection(host, port) == True):
-            self._createHTTPParseObj()
-            postHeader="POST "+path+" HTTP/1.1\r\n"+"Host: "+host+"\r\n"+"User-Agent: "+user_agent+"\r\n"+"Content-Type: "+content_type+"\r\n"+"Content-Length: "+str(len(content))+"\r\n"+"\r\n"+content+"\r\n";
-            #print(postHeader,len(postHeader))
-            txData="AT+CIPSEND="+str(len(postHeader))+"\r\n"
-            retData = self._sendToESP8266(txData)
-            if(retData != None):
-                if ">" in retData:
-                    retData = self._sendToESP8266(postHeader, delay=2)
-                    #print(".......@@",retData)            
-                    self._sendToESP8266("AT+CIPCLOSE\r\n")
-                    #print(self.__httpResponse)
                     retData=self.__httpResponse.parseHTTP(retData)
                     return retData, self.__httpResponse.getHTTPResponse()
                 else:

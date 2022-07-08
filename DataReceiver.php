@@ -11,21 +11,23 @@
     $auth = $factory->createAuth();
     $database = $factory->createDatabase();
 
-    // Get Data and Hash
-    $id = $_GET['id'];
-    $previous = $_GET['previous'];
+    // Get Data
     $ph = $_GET['ph'];
+    $volt = $_GET['volt'];
+    $previous = $_GET['previous'];
     $hash = $_GET['hash'];
 
-    $id = sprintf("%03d", $id);
-
-    print($id." ".$ph." ".$hash);
+    // Generate Datetime, ID, and Hash
+    $datetime = date('H:i:s d-m-Y',strtotime("+7 hours"));
+    $id = uniqid();
 
     // Send Query to Firebase
-    //$database->getReference('/Device1/00-Block_'.$id)
-    //->set([
-    //        '01-Previous' => $previous,
-    //        '02-Data' => $ph,
-    //        '03-Hash' => $hash
-    //    ]);
+    $database->getReference('/Device/'.$id)
+    ->set([
+            '01-Previous' => $previous,
+            '02-PH' => $ph,
+            '03-Volt' => $volt,
+            '04-Datetime' => $datetime,
+            '05-Hash' => $hash
+        ]);
 ?>
